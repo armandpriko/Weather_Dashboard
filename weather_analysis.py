@@ -3,7 +3,7 @@ import json
 import calendar
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')  # Utilise le backend non-GUI adapté aux serveurs
+matplotlib.use('Agg')  # Utilise le backend non-GUI adapté aux serveurs au cas où toi qui lis t'es sur Mac
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, send_file, jsonify
 from datetime import datetime
@@ -219,8 +219,10 @@ def plot_gdd(df, station, year, month):
     plt.close()
 
 
+#Les routes de l'application
 
 @app.route("/", methods=["GET", "POST"])
+
 def index():
     global uploaded_data
     if request.method == "POST":
@@ -242,6 +244,7 @@ def index():
 
 
 @app.route("/download/<file_type>/<station>/<year>/<month>")
+
 def download(file_type, station, year, month):
     if file_type == "pdf":
         # Recharge le CSV pour le PDF
@@ -261,6 +264,7 @@ def download(file_type, station, year, month):
 
 
 @app.route("/upload", methods=["POST"])
+
 def upload():
     if "file" not in request.files:
         return jsonify({"error": "Aucun fichier sélectionné."}), 400
@@ -294,6 +298,7 @@ def upload():
         return jsonify({"error": f"Erreur lors de la lecture du fichier : {str(e)}"}), 500
 
 @app.route("/daily", methods=["GET", "POST"])
+
 def daily():
     if request.method == "POST":
         station = request.form["station"].upper()
@@ -316,4 +321,5 @@ def daily():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
