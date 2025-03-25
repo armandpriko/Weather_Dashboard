@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            color: #4682b4;
+            animation: fadeIn 2s ease-in-out;
+        }
+        form {
+            margin: 20px 0;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4682b4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #5a9bd4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #4682b4;
+            color: white;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h2>Analyse Météo Mensuelle</h2>
+    <form method="POST">
+        <input type="text" name="station" placeholder="Station météo" required>
+        <input type="number" name="year" placeholder="Année" required>
+        <input type="number" name="month" placeholder="Mois" required>
+        <button type="submit">Rechercher</button>
+    </form>
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if data %}
+        <h3>Résultats pour {{ station }} ({{ month }}/{{ year }})</h3>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Température min (°C)</th>
+                <th>Température max (°C)</th>
+                <th>Humidité (%)</th>
+            </tr>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.Date }}</td>
+                <td>{{ row["Température min (°C)"] }}</td>
+                <td>{{ row["Température max (°C)"] }}</td>
+                <td>{{ row["Humidité (%)"] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        
+        <button onclick="downloadFile('csv')">Télécharger CSV</button>
+        <button onclick="downloadFile('pdf')">Télécharger PDF</button>
+    {% endif %}
+
+    <script>
+        function downloadFile(fileType) {
+            const station = "{{ station }}";  // Récupère la valeur du serveur
+            const year = "{{ year }}";
+            const month = "{{ month }}";
+    
+            if (!station || !year || !month) {
+                alert("Veuillez entrer toutes les informations avant de télécharger.");
+                return;
+            }
+    
+            window.location.href = `/download/${fileType}/${station}/${year}/${month}`;
+        }
+    </script>
+
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="fileInput" accept=".csv, .json">
+    <button type="button" onclick="uploadFile()" style="background-color: #28a745; color: white;">Uploader CSV/JSON</button>
+</form>
+
+<script>
+    function uploadFile() {
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files.length) {
+            alert("Veuillez sélectionner un fichier.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        fetch("/upload", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                location.reload(); // Recharge la page pour afficher les données du fichier
+            }
+        })
+        .catch(error => console.error("Erreur:", error));
+    }
+</script>
+
+    
+</body>
+</html>

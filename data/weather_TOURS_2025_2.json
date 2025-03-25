@@ -1,0 +1,18 @@
+[
+    {
+        "Date":"2025-02-04",
+        "Température min (°C)":null,
+        "Température max (°C)":null,
+        "Humidité (%)":100.0,
+        "GDD":0,
+        "GDD cumulés":0
+    },
+    {
+        "Date":"2025-02-07",
+        "Température min (°C)":null,
+        "Température max (°C)":null,
+        "Humidité (%)":98.0,
+        "GDD":0,
+        "GDD cumulés":0
+    }
+]
