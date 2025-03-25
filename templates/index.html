@@ -108,7 +108,7 @@
     <input type="file" id="fileInput" accept=".csv, .json">
     <button type="button" onclick="uploadFile()" style="background-color: #28a745; color: white;">Uploader CSV/JSON</button>
 </form>
-
+<form method="post" enctype="multipart/form-data" onsubmit="return validateForm()"></form>
 <script>
     function uploadFile() {
         const fileInput = document.getElementById("fileInput");
@@ -135,7 +135,24 @@
         .catch(error => console.error("Erreur:", error));
     }
 </script>
-
+<script>
+    function validateForm() {
+      const year = parseInt(document.getElementById("year").value);
+      const month = parseInt(document.getElementById("month").value);
+  
+      if (isNaN(year) || year < 1900 || year > 2100) {
+        alert("Veuillez entrer une année entre 1900 et 2100.");
+        return false;
+      }
+  
+      if (isNaN(month) || month < 1 || month > 12) {
+        alert("Veuillez entrer un mois entre 1 et 12.");
+        return false;
+      }
+  
+      return true;
+    }
+  </script>
     
 </body>
 </html>

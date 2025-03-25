@@ -20,6 +20,22 @@ def create_data_directory():
     data_dir.mkdir(exist_ok=True)
     return data_dir
 
+def plot_gdd(df, station, year, month):
+    if "GDD cumulés" not in df.columns:
+        return
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(df["Date"], df["GDD cumulés"], marker='o', color='green')
+    plt.title(f"GDD cumulés - {station} ({month}/{year})")
+    plt.xlabel("Date")
+    plt.ylabel("GDD cumulés")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.grid()
+    plot_path = f"static/gdd_plot.png"
+    plt.savefig(plot_path)
+    plt.close()
+
 # ---- RECUPERATION DES DONNEES METEO MENSUELLES ----
 def get_monthly_weather_data(station, year, month):
     """Télécharge les données météo pour une station sur un mois donné"""
