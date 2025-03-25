@@ -17,11 +17,81 @@ UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+def is_valid_date(date_str):
+    try:
+        datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+    
+
 
 def create_data_directory():
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
     return data_dir
+
+def get_weather_data(station, date):
+    base_url = "https://data.opendatasoft.com/api/explore/v2.1/catalog/datasets/donnees-synop-essentielles-omm@public/records"
+    all_data = []
+    offset = 0
+    limit = 100
+
+    while True:
+        params = {
+            "limit": limit,
+            "offset": offset,
+            "where": f"date >= '{date}T00:00:00Z' AND date <= '{date}T23:59:59Z' AND nom = '{station}'",
+            "sort": "date"
+        }
+
+        try:
+            response = requests.get(base_url, params=params, timeout=25)
+            response.raise_for_status()
+            data = response.json()
+            results = data.get("results", [])
+            if not results:
+                break
+            all_data.extend(results)
+            offset += limit
+        except requests.Timeout:
+            print("Temps d'attente dépassé !")
+            break
+        except requests.RequestException as e:
+            print(f"Erreur API : {e}")
+            break
+
+    return [entry for entry in all_data if station.upper() in entry.get("nom", "").upper()]
+
+
+def process_daily_data(data):
+    records = []
+    for record in data:
+        date_time = record.get("date", "")
+        if not date_time:
+            continue
+
+        records.append({
+            "Date": date_time.split("T")[0],
+            "Heure": date_time.split("T")[1][:5],
+            "Température (°C)": round(record.get("tc"), 1) if record.get("tc") is not None else None,
+            "Humidité (%)": record.get("u"),
+            "Précipitations (mm)": record.get("rr1")
+        })
+
+    df = pd.DataFrame(records)
+
+    if df.empty:
+        return df
+
+    df["Heure"] = pd.to_datetime(df["Heure"], format="%H:%M", errors="coerce").dt.strftime("%H:%M")
+    df.sort_values(by=["Date", "Heure"], inplace=True)
+
+    df["Température (°C)"] = df["Température (°C)"].interpolate(method="linear")
+    df["Humidité (%)"] = df["Humidité (%)"].interpolate(method="linear")
+    df.dropna(subset=["Température (°C)", "Humidité (%)"], inplace=True)
+
+    return df
 
 
 def get_monthly_weather_data(station, year, month):
@@ -222,6 +292,27 @@ def upload():
         return jsonify({"success": "Fichier chargé avec succès.", "data": uploaded_data})
     except Exception as e:
         return jsonify({"error": f"Erreur lors de la lecture du fichier : {str(e)}"}), 500
+
+@app.route("/daily", methods=["GET", "POST"])
+def daily():
+    if request.method == "POST":
+        station = request.form["station"].upper()
+        date = request.form["date"]
+
+        if not is_valid_date(date):
+            return render_template("daily.html", error="Date invalide (YYYY-MM-DD)")
+
+        data = get_weather_data(station, date)
+        if not data:
+            return render_template("daily.html", error="Aucune donnée trouvée pour cette date.")
+
+        df = process_daily_data(data)
+        if df.empty:
+            return render_template("daily.html", error="Aucune donnée exploitable.")
+
+        return render_template("daily.html", data=df.to_dict(orient="records"), station=station, date=date)
+
+    return render_template("daily.html")
 
 
 if __name__ == "__main__":
