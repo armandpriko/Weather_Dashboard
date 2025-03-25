@@ -103,11 +103,20 @@
             window.location.href = `/download/${fileType}/${station}/${year}/${month}`;
         }
     </script>
+    {% if data %}
+    <h3>Graphique des GDD cumulés</h3>
+    <img src="{{ url_for('static', filename='gdd_plot.png') }}" alt="GDD cumulés" style="max-width:100%; height:auto;">
+    {% endif %}
+
 
 <form id="uploadForm" enctype="multipart/form-data">
     <input type="file" id="fileInput" accept=".csv, .json">
     <button type="button" onclick="uploadFile()" style="background-color: #28a745; color: white;">Uploader CSV/JSON</button>
 </form>
+<form action="/daily" method="get" style="margin-top: 20px;">
+    <button type="submit" style="background-color: #6c757d;">Accéder à l'analyse journalière</button>
+</form>
+
 <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()"></form>
 <script>
     function uploadFile() {

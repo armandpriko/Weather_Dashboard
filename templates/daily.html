@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse Météo Journalière</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            color: #4682b4;
+        }
+        form {
+            margin: 20px 0;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4682b4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #5a9bd4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #4682b4;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Analyse Météo Journalière</h2>
+    <form method="POST">
+        <input type="text" name="station" placeholder="Station météo (ex: ORLY)" required>
+        <input type="date" name="date" required>
+        <button type="submit">Rechercher</button>
+        <a href="/" style="margin-left: 15px; color: #4682b4;">Retour à l'analyse mensuelle</a>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if data %}
+        <h3>Résultats pour {{ station }} ({{ date }})</h3>
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Heure</th>
+                <th>Température (°C)</th>
+                <th>Humidité (%)</th>
+            </tr>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.Date }}</td>
+                <td>{{ row.Heure }}</td>
+                <td>{{ row["Température (°C)"] }}</td>
+                <td>{{ row["Humidité (%)"] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p><strong>Température max :</strong> {{ temp_max }} °C</p>
+        <p><strong>Température min :</strong> {{ temp_min }} °C</p>
+        <p><strong>Humidité max :</strong> {{ hum_max }} %</p>
+        <p><strong>Humidité min :</strong> {{ hum_min }} %</p>
+
+        <a href="/download_daily/{{ station }}/{{ date }}" style="color: #4682b4; font-weight: bold;">Télécharger les données</a>
+    {% endif %}
+</body>
+</html>
