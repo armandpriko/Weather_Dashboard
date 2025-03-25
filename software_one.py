@@ -5,7 +5,8 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#  Vérifier si une date entrée est valide
+# 1. Validation de date
+
 def is_valid_date(date_str):
     try:
         datetime.strptime(date_str, "%Y-%m-%d")
@@ -13,15 +14,16 @@ def is_valid_date(date_str):
     except ValueError:
         return False
 
-#  Créer un dossier "data" s'il n'existe pas déjà
+# 2. Créer dossier de sauvegarde
+
 def create_data_directory():
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
     return data_dir
 
-# Transformer les données JSON en DataFrame Pandas
+# 3. Traitement des données JSON en DataFrame
+
 def process_weather_data(data):
-    """Transforme les données JSON en DataFrame exploitable."""
     records = []
 
     for record in data:
@@ -32,9 +34,9 @@ def process_weather_data(data):
         records.append({
             "Date": date_time.split("T")[0],
             "Heure": date_time.split("T")[1][:5],
-            "Température (°C)": round(record.get("tc", 0), 1) if record.get("tc") is not None else None,
-            "Humidité (%)": record.get("u", None),
-            "Précipitations (mm)": record.get("rr1", None)
+            "Température (°C)": round(record.get("tc"), 1) if record.get("tc") is not None else None,
+            "Humidité (%)": record.get("u"),
+            "Précipitations (mm)": record.get("rr1")
         })
 
     df = pd.DataFrame(records)
@@ -42,84 +44,79 @@ def process_weather_data(data):
     if df.empty:
         return df
 
-    df["Heure"] = pd.to_datetime(df["Heure"], format="%H:%M", errors="coerce")
-    df.dropna(subset=["Heure"], inplace=True)
+    df["Heure"] = pd.to_datetime(df["Heure"], format="%H:%M", errors="coerce").dt.strftime("%H:%M")
+    df.sort_values(by=["Date", "Heure"], inplace=True)
 
-    df["Heure"] = df["Heure"].dt.floor("3H").dt.strftime("%H:%M")
-
-    df = df[df["Heure"].isin(["00:00", "03:00", "06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "22:00"])]
-
-    # Imputation linéaire des valeurs manquantes
     df["Température (°C)"] = df["Température (°C)"].interpolate(method="linear")
     df["Humidité (%)"] = df["Humidité (%)"].interpolate(method="linear")
-
-    # Suppression finale des lignes toujours nulles après interpolation
     df.dropna(subset=["Température (°C)", "Humidité (%)"], inplace=True)
 
     return df
 
-#  Obtenir les données météo via l'API OpenDataSoft
+# 4. Requête API avec pagination
+
 def get_weather_data(station, date):
-    """Télécharge les données météo pour une station et une date spécifique"""
     base_url = "https://data.opendatasoft.com/api/explore/v2.1/catalog/datasets/donnees-synop-essentielles-omm@public/records"
-    params = {
-        "limit": 100,
-        "refine.nom": station,
-        "where": f"date >= '{date}T00:00:00Z' AND date <= '{date}T23:59:59Z'",
-        "sort": "date"
-    }
+    all_data = []
+    offset = 0
+    limit = 100
 
-    try:
-        response = requests.get(base_url, params=params, timeout=25)
-        response.raise_for_status()
-        data = response.json()
-        if "results" not in data or not data["results"]:
-            print(f"Aucune donnée trouvée pour la station '{station}' à la date '{date}'.")
-            return []
+    while True:
+        params = {
+            "limit": limit,
+            "offset": offset,
+            "where": f"date >= '{date}T00:00:00Z' AND date <= '{date}T23:59:59Z' AND nom = '{station}'",
+            "sort": "date"
+        }
 
-        valid_data = [entry for entry in data["results"] if station.upper() in entry.get("nom", "").upper()]
-        if not valid_data:
-            print(f"Aucune donnée exacte pour la station '{station}' à la date '{date}'.")
-            return []
-        return valid_data
+        try:
+            response = requests.get(base_url, params=params, timeout=25)
+            response.raise_for_status()
+            data = response.json()
+            results = data.get("results", [])
+            if not results:
+                break
+            all_data.extend(results)
+            offset += limit
+        except requests.Timeout:
+            print("Temps d'attente dépassé !")
+            break
+        except requests.RequestException as e:
+            print(f"Erreur API : {e}")
+            break
 
-    except requests.Timeout:
-        print("Temps d'attente dépassé ! Réessayez plus tard.")
-        return []
-    except requests.RequestException as e:
-        print(f"Erreur API : {e}")
-        return []
+    return [entry for entry in all_data if station.upper() in entry.get("nom", "").upper()]
 
-#  Enregistrer les données JSON dans un fichier
+# 5. Enregistrement JSON
+
 def save_data_as_json(data, station, date):
     if not data:
         return
-    data_dir = create_data_directory()
-    file_path = data_dir / f"weather_{station}_{date}.json"
-    with open(file_path, "w", encoding="utf-8") as json_file:
-        json.dump(data, json_file, indent=4, ensure_ascii=False)
+    file_path = create_data_directory() / f"weather_{station}_{date}.json"
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4, ensure_ascii=False)
     print(f"Données enregistrées sous {file_path}")
 
-#  Affichage des données
+# 6. Affichage tableau terminal
+
 def display_weather_table(df, station, date):
     if df.empty:
-        print(f"Pas de données disponibles pour la station {station} à la date {date}.")
+        print(f"Pas de données disponibles pour {station} à la date {date}.")
         return
 
-    date_obj = datetime.strptime(date, "%Y-%m-%d")
-    formatted_date = date_obj.strftime("%B %Y")
     current_time = datetime.now()
+    formatted_date = datetime.strptime(date, "%Y-%m-%d").strftime("%B %Y")
 
     print("\n|--------------------------------------------|")
-    print(f"| Weather station: {station}                  |")
-    print(f"| Today is the {date}. It's {current_time.strftime('%H:%M')}|")
-    print(f"| Chosen month: {formatted_date}                     |")
+    print(f"| Weather station: {station:<32}|")
+    print(f"| Today is the {date}. It's {current_time.strftime('%H:%M'):<15}|")
+    print(f"| Chosen month: {formatted_date:<26}|")
     print("|----------------------------------------------|")
     print("|  Day                |  T(°C)  | Humidité(%)  |")
     print("|---------------------|---------|--------------|")
 
     for _, row in df.iterrows():
-        temp = f"{round(row['Température (°C)'], 1):.1f}".replace('.', ',') if pd.notna(row["Température (°C)"]) else "N/A"
+        temp = f"{row['Température (°C)']:.1f}".replace('.', ',') if pd.notna(row["Température (°C)"]) else "N/A"
         humidity = f"{row['Humidité (%)']:.1f}".replace('.', ',') if pd.notna(row["Humidité (%)"]) else "N/A"
         print(f"| {row['Date']} | {row['Heure']} | {temp:^7} | {humidity:^11} |")
 
@@ -130,38 +127,40 @@ def display_weather_table(df, station, date):
     print(f"Humidité max : {df['Humidité (%)'].max()} %")
     print(f"Humidité min : {df['Humidité (%)'].min()} %")
 
-# Graphiques
+# 7. Graphe matplotlib
+
 def plot_weather_data(df, station, date):
     if df.empty:
         print("Aucune donnée disponible pour le graphique.")
         return
 
     plt.figure(figsize=(10, 5))
-    plt.plot(df["Heure"], df["Température (°C)"], marker='o', linestyle='-', color='r', label="Température (°C)")
+    plt.plot(df["Heure"], df["Température (°C)"], 'r-o', label="Température (°C)")
     plt.twinx()
-    plt.plot(df["Heure"], df["Humidité (%)"], marker='s', linestyle='--', color='b', label="Humidité (%)")
+    plt.plot(df["Heure"], df["Humidité (%)"], 'b--s', label="Humidité (%)")
     plt.title(f"Évolution de la température et de l'humidité - {station} ({date})")
     plt.xlabel("Heure")
     plt.xticks(rotation=45)
-    plt.legend(loc="upper left")
     plt.grid()
     plt.show()
+
+# 8. Export CSV
 
 def save_data_as_csv(df, station, date):
     if df.empty:
         print("Aucune donnée à enregistrer.")
         return
-    data_dir = create_data_directory()
-    file_path = data_dir / f"weather_{station}_{date}.csv"
+    file_path = create_data_directory() / f"weather_{station}_{date}.csv"
     df.to_csv(file_path, index=False, sep=";", encoding="utf-8")
     print(f" Données enregistrées sous {file_path}")
 
-# Fonction principale
+# 9. Programme principal
+
 def main():
     current_time = datetime.now()
     print("\n|--------------------------------------------|")
     print(f"| Welcome to Weather History Viewer          |")
-    print(f"| Today is {current_time.strftime('%Y-%m-%d')}. It is {current_time.strftime('%H:%M')}           |")
+    print(f"| Today is {current_time.strftime('%Y-%m-%d')}. It is {current_time.strftime('%H:%M'):<15}|")
     print("|--------------------------------------------|")
 
     station = input("\nEnter weather station name (e.g., ROUEN-BOOS): ").upper()
@@ -173,13 +172,11 @@ def main():
 
     print("\nFetching weather data...")
     data = get_weather_data(station, date)
-
     if not data:
         print(f"Aucune donnée trouvée pour {station} à la date {date}.")
         return
 
     df = process_weather_data(data)
-
     if df.empty:
         print(f"Aucune donnée exploitable pour {station} à la date {date}.")
         return
