@@ -54,6 +54,7 @@
         }
     </style>
 </head>
+
 <body>
     <h2>Analyse Météo Mensuelle</h2>
     <form method="POST">
@@ -167,4 +168,14 @@
   </script>
     
 </body>
+
+<div style="margin-bottom: 30px; font-family: monospace; text-align: left;">
+    <pre style="background-color: #e6f2ff; padding: 15px; border-radius: 10px;">
+| Weather station: {{ station if station else "ROUEN-BOOS" }}                 |
+| Today is the {{ current_date }}. It is {{ current_time }}.         |
+| Chosen month: {{ current_month_name }} {{ current_year }}              |
+|-----------------------------------------------------|
+    </pre>
+</div>
+
 </html>

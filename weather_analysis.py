@@ -297,27 +297,39 @@ def upload():
     except Exception as e:
         return jsonify({"error": f"Erreur lors de la lecture du fichier : {str(e)}"}), 500
 
+
 @app.route("/daily", methods=["GET", "POST"])
 
 def daily():
+    current_datetime = datetime.now()
+    context = {
+        "current_date": current_datetime.strftime("%m/%d/%Y"),
+        "current_time": current_datetime.strftime("%H:%M"),
+        "current_month_name": current_datetime.strftime("%B"),
+        "current_year": current_datetime.year,
+        "station": None  # valeur par défaut
+    }
+
     if request.method == "POST":
         station = request.form["station"].upper()
         date = request.form["date"]
+        context["station"] = station  # mise à jour du contexte
 
         if not is_valid_date(date):
-            return render_template("daily.html", error="Date invalide (YYYY-MM-DD)")
+            return render_template("daily.html", error="Date invalide (YYYY-MM-DD)", **context)
 
         data = get_weather_data(station, date)
         if not data:
-            return render_template("daily.html", error="Aucune donnée trouvée pour cette date.")
+            return render_template("daily.html", error="Aucune donnée trouvée pour cette date.", **context)
 
         df = process_daily_data(data)
         if df.empty:
-            return render_template("daily.html", error="Aucune donnée exploitable.")
+            return render_template("daily.html", error="Aucune donnée exploitable.", **context)
 
-        return render_template("daily.html", data=df.to_dict(orient="records"), station=station, date=date)
+        return render_template("daily.html", data=df.to_dict(orient="records"), station=station, date=date, **context)
 
-    return render_template("daily.html")
+    return render_template("daily.html", **context)
+
 
 
 if __name__ == "__main__":
