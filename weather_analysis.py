@@ -40,12 +40,12 @@ def get_monthly_weather_data(station, year, month):
         response.raise_for_status()
         data = response.json()
         if not data:
-            print(f"❌ Aucune donnée trouvée pour {station} en {date_prefix}.")
+            print(f" Aucune donnée trouvée pour {station} en {date_prefix}.")
             return []
         return data
 
     except requests.RequestException as e:
-        print(f"❌ Erreur API : {e}")
+        print(f" Erreur API : {e}")
         return []
 
 
@@ -97,16 +97,33 @@ def save_data(df, station, year, month, format="csv"):
 
 def generate_pdf(df, station, year, month):
     pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # Page 1 : Texte
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
     pdf.cell(200, 10, f"Rapport météo - {station} ({month}/{year})", ln=True, align="C")
     pdf.ln(10)
+
     pdf.set_font("Arial", "", 12)
     for index, row in df.iterrows():
-        pdf.cell(200, 10, f"{row['Date']} - Temp Min: {row['Température min (°C)']}°C, Temp Max: {row['Température max (°C)']}°C, Humidité: {row['Humidité (%)']}%", ln=True)
+        line = f"{row['Date']} - Temp Min: {row['Température min (°C)']}°C, Temp Max: {row['Température max (°C)']}°C, Humidité: {row['Humidité (%)']}%"
+        pdf.multi_cell(0, 10, line)
+
+    # Page 2 : Graphique GDD
+    plot_path = f"static/gdd_plot.png"
+    if os.path.exists(plot_path):
+        pdf.add_page()
+        pdf.set_font("Arial", "B", 14)
+        pdf.cell(0, 10, "Graphique des GDD cumulés", ln=True, align="C")
+        pdf.ln(5)
+        pdf.image(plot_path, x=10, w=190)  
+
     file_path = f"data/weather_{station}_{year}_{month}.pdf"
     pdf.output(file_path)
+
     return file_path if os.path.exists(file_path) else None
+
 
 
 
@@ -114,7 +131,7 @@ def plot_gdd(df, station, year, month):
     if "GDD cumulés" not in df.columns:
         return
 
-    # ✅ Assure-toi que le dossier "static" existe
+    
     static_dir = Path("static")
     static_dir.mkdir(exist_ok=True)
 
@@ -156,8 +173,21 @@ def index():
 
 @app.route("/download/<file_type>/<station>/<year>/<month>")
 def download(file_type, station, year, month):
-    file_path = f"data/weather_{station}_{year}_{month}.{file_type}"
+    if file_type == "pdf":
+        # Recharge le CSV pour le PDF
+        file_path_csv = f"data/weather_{station}_{year}_{month}.csv"
+        if not os.path.exists(file_path_csv):
+            return "CSV introuvable pour générer le PDF", 404
+        df = pd.read_csv(file_path_csv, delimiter=";")
+        file_path = generate_pdf(df, station, year, month)
+    else:
+        file_path = f"data/weather_{station}_{year}_{month}.{file_type}"
+
+    if not os.path.exists(file_path):
+        return "Fichier non trouvé", 404
+
     return send_file(file_path, as_attachment=True)
+
 
 
 @app.route("/upload", methods=["POST"])
