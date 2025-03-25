@@ -1,0 +1,250 @@
+[
+    {
+        "Date":"2024-01-01",
+        "Température min (°C)":-5.5,
+        "Température max (°C)":31.7,
+        "Humidité (%)":80.5423728814,
+        "GDD":3.1,
+        "GDD cumulés":3.1
+    },
+    {
+        "Date":"2024-01-02",
+        "Température min (°C)":-4.6,
+        "Température max (°C)":32.2,
+        "Humidité (%)":81.6821052632,
+        "GDD":3.8,
+        "GDD cumulés":6.9
+    },
+    {
+        "Date":"2024-01-03",
+        "Température min (°C)":-2.0,
+        "Température max (°C)":31.2,
+        "Humidité (%)":79.4444444444,
+        "GDD":4.6,
+        "GDD cumulés":11.5
+    },
+    {
+        "Date":"2024-01-04",
+        "Température min (°C)":-4.9,
+        "Température max (°C)":31.7,
+        "Humidité (%)":79.0587002096,
+        "GDD":3.4,
+        "GDD cumulés":14.9
+    },
+    {
+        "Date":"2024-01-05",
+        "Température min (°C)":-6.7,
+        "Température max (°C)":30.9,
+        "Humidité (%)":82.9979035639,
+        "GDD":2.1,
+        "GDD cumulés":17.0
+    },
+    {
+        "Date":"2024-01-06",
+        "Température min (°C)":-7.3,
+        "Température max (°C)":30.5,
+        "Humidité (%)":81.6680584551,
+        "GDD":1.6,
+        "GDD cumulés":18.6
+    },
+    {
+        "Date":"2024-01-07",
+        "Température min (°C)":-8.1,
+        "Température max (°C)":31.3,
+        "Humidité (%)":79.3797468354,
+        "GDD":1.6,
+        "GDD cumulés":20.2
+    },
+    {
+        "Date":"2024-01-08",
+        "Température min (°C)":-6.3,
+        "Température max (°C)":30.6,
+        "Humidité (%)":75.9219409283,
+        "GDD":2.15,
+        "GDD cumulés":22.35
+    },
+    {
+        "Date":"2024-01-09",
+        "Température min (°C)":-6.8,
+        "Température max (°C)":30.7,
+        "Humidité (%)":77.552742616,
+        "GDD":1.95,
+        "GDD cumulés":24.3
+    },
+    {
+        "Date":"2024-01-10",
+        "Température min (°C)":-7.3,
+        "Température max (°C)":31.1,
+        "Humidité (%)":79.7078891258,
+        "GDD":1.9,
+        "GDD cumulés":26.2
+    },
+    {
+        "Date":"2024-01-11",
+        "Température min (°C)":-8.5,
+        "Température max (°C)":31.9,
+        "Humidité (%)":81.1362683438,
+        "GDD":1.7,
+        "GDD cumulés":27.9
+    },
+    {
+        "Date":"2024-01-12",
+        "Température min (°C)":-9.0,
+        "Température max (°C)":31.9,
+        "Humidité (%)":80.685106383,
+        "GDD":1.45,
+        "GDD cumulés":29.35
+    },
+    {
+        "Date":"2024-01-13",
+        "Température min (°C)":-10.2,
+        "Température max (°C)":30.8,
+        "Humidité (%)":83.7400419287,
+        "GDD":0.3,
+        "GDD cumulés":29.65
+    },
+    {
+        "Date":"2024-01-14",
+        "Température min (°C)":-8.9,
+        "Température max (°C)":31.0,
+        "Humidité (%)":83.28,
+        "GDD":1.05,
+        "GDD cumulés":30.7
+    },
+    {
+        "Date":"2024-01-15",
+        "Température min (°C)":-5.7,
+        "Température max (°C)":30.6,
+        "Humidité (%)":82.0063965885,
+        "GDD":2.45,
+        "GDD cumulés":33.15
+    },
+    {
+        "Date":"2024-01-16",
+        "Température min (°C)":-9.5,
+        "Température max (°C)":30.3,
+        "Humidité (%)":82.1468085106,
+        "GDD":0.4,
+        "GDD cumulés":33.55
+    },
+    {
+        "Date":"2024-01-17",
+        "Température min (°C)":-6.2,
+        "Température max (°C)":30.6,
+        "Humidité (%)":86.5247311828,
+        "GDD":2.2,
+        "GDD cumulés":35.75
+    },
+    {
+        "Date":"2024-01-18",
+        "Température min (°C)":-5.9,
+        "Température max (°C)":31.2,
+        "Humidité (%)":80.5628997868,
+        "GDD":2.65,
+        "GDD cumulés":38.4
+    },
+    {
+        "Date":"2024-01-19",
+        "Température min (°C)":-8.3,
+        "Température max (°C)":30.7,
+        "Humidité (%)":77.3347547974,
+        "GDD":1.2,
+        "GDD cumulés":39.6
+    },
+    {
+        "Date":"2024-01-20",
+        "Température min (°C)":-12.1,
+        "Température max (°C)":31.4,
+        "Humidité (%)":76.2483940043,
+        "GDD":0.0,
+        "GDD cumulés":39.6
+    },
+    {
+        "Date":"2024-01-21",
+        "Température min (°C)":-8.4,
+        "Température max (°C)":30.5,
+        "Humidité (%)":76.6196581197,
+        "GDD":1.05,
+        "GDD cumulés":40.65
+    },
+    {
+        "Date":"2024-01-22",
+        "Température min (°C)":-3.3,
+        "Température max (°C)":30.4,
+        "Humidité (%)":78.213362069,
+        "GDD":3.55,
+        "GDD cumulés":44.2
+    },
+    {
+        "Date":"2024-01-23",
+        "Température min (°C)":-4.4,
+        "Température max (°C)":29.9,
+        "Humidité (%)":82.2854030501,
+        "GDD":2.75,
+        "GDD cumulés":46.95
+    },
+    {
+        "Date":"2024-01-24",
+        "Température min (°C)":-9.8,
+        "Température max (°C)":30.6,
+        "Humidité (%)":82.064516129,
+        "GDD":0.4,
+        "GDD cumulés":47.35
+    },
+    {
+        "Date":"2024-01-25",
+        "Température min (°C)":-5.8,
+        "Température max (°C)":30.4,
+        "Humidité (%)":84.5237068966,
+        "GDD":2.3,
+        "GDD cumulés":49.65
+    },
+    {
+        "Date":"2024-01-26",
+        "Température min (°C)":-8.4,
+        "Température max (°C)":30.5,
+        "Humidité (%)":80.6995798319,
+        "GDD":1.05,
+        "GDD cumulés":50.7
+    },
+    {
+        "Date":"2024-01-27",
+        "Température min (°C)":-4.7,
+        "Température max (°C)":31.1,
+        "Humidité (%)":80.2314225053,
+        "GDD":3.2,
+        "GDD cumulés":53.9
+    },
+    {
+        "Date":"2024-01-28",
+        "Température min (°C)":-3.5,
+        "Température max (°C)":30.7,
+        "Humidité (%)":78.6135881104,
+        "GDD":3.6,
+        "GDD cumulés":57.5
+    },
+    {
+        "Date":"2024-01-29",
+        "Température min (°C)":-2.4,
+        "Température max (°C)":30.5,
+        "Humidité (%)":81.1355932203,
+        "GDD":4.05,
+        "GDD cumulés":61.55
+    },
+    {
+        "Date":"2024-01-30",
+        "Température min (°C)":-9.5,
+        "Température max (°C)":32.3,
+        "Humidité (%)":80.1995798319,
+        "GDD":1.4,
+        "GDD cumulés":62.95
+    },
+    {
+        "Date":"2024-01-31",
+        "Température min (°C)":-7.3,
+        "Température max (°C)":32.3,
+        "Humidité (%)":81.5548523207,
+        "GDD":2.5,
+        "GDD cumulés":65.45
+    }
+]
