@@ -6,13 +6,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            background-color: #f5faff;
             color: #333;
             text-align: center;
             padding: 20px;
         }
         h2 {
-            color: #4682b4;
+            color: #0077b6;
         }
         form {
             margin: 20px 0;
@@ -20,43 +20,39 @@
         input, button {
             padding: 10px;
             margin: 5px;
-            border: 1px solid #ccc;
             border-radius: 5px;
+            border: 1px solid #ccc;
         }
         button {
-            background-color: #4682b4;
+            background-color: #00b692;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #5a9bd4;
+            background-color: #0096c7;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
+            margin: 20px 0;
         }
         th, td {
+            border: 1px solid #ccc;
             padding: 10px;
-            text-align: center;
         }
         th {
-            background-color: #4682b4;
+            background-color: #0077b6;
             color: white;
         }
     </style>
 </head>
 <body>
     <h2>Analyse Météo Journalière</h2>
-    <form method="POST">
-        <input type="text" name="station" placeholder="Station météo (ex: ORLY)" required>
+
+    <form action="/daily_results" method="POST">
+        <input type="text" name="station" placeholder="Station météo" required>
         <input type="date" name="date" required>
         <button type="submit">Rechercher</button>
-        <a href="/" style="margin-left: 15px; color: #4682b4;">Retour à l'analyse mensuelle</a>
     </form>
 
     {% if error %}
@@ -64,7 +60,7 @@
     {% endif %}
 
     {% if data %}
-        <h3>Résultats pour {{ station }} ({{ date }})</h3>
+        <h3>Résultats pour {{ station }} le {{ date }}</h3>
         <table>
             <tr>
                 <th>Date</th>
@@ -81,13 +77,8 @@
             </tr>
             {% endfor %}
         </table>
-
-        <p><strong>Température max :</strong> {{ temp_max }} °C</p>
-        <p><strong>Température min :</strong> {{ temp_min }} °C</p>
-        <p><strong>Humidité max :</strong> {{ hum_max }} %</p>
-        <p><strong>Humidité min :</strong> {{ hum_min }} %</p>
-
-        <a href="/download_daily/{{ station }}/{{ date }}" style="color: #4682b4; font-weight: bold;">Télécharger les données</a>
     {% endif %}
+
+    <a href="/" style="display:inline-block; margin-top:20px; text-decoration:none; background-color:#6c757d; color:white; padding:10px 20px; border-radius:5px;">Retour à l'accueil</a>
 </body>
 </html>
