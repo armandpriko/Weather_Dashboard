@@ -35,7 +35,7 @@
 
 ```bash
 git clone https://github.com/armandpriko/Weather_Dashboard.git
-cd Weather_Dashboard
+cd Weather_Dashboard```
 
 ---
 
