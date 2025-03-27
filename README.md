@@ -29,16 +29,6 @@
 
 ---
 
-## 🚀 Installation locale
-
-### 1. Cloner le dépôt
-
-```bash
-git clone https://github.com/armandpriko/Weather_Dashboard.git
-cd Weather_Dashboard```
-
----
-
 Application déployée sur Render.
 
 ---
@@ -48,4 +38,14 @@ Application déployée sur Render.
 Pour cette partie , j’ai monté un Raspberry pi avec un DHT11 pour la collecte des donnés sur des intervalles de 3h à partir de 00h00 (donc 8 prises par jour).
 
 
+
+
+
+## 🚀 Installation locale
+
+### 1. Cloner le dépôt
+
+```bash
+git clone https://github.com/armandpriko/Weather_Dashboard.git
+cd Weather_Dashboard```
 
